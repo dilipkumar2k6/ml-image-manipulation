@@ -3,7 +3,7 @@ import glob
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
-from PIL import Image, ImageStat
+import cv2
 
 from utils import check_results
 
@@ -19,11 +19,15 @@ def calculate_mean_std(image_list):
     """
     means = []
     stds = []
-    for path in image_list:
-        img = Image.open(path).convert('RGB')
-        stat = ImageStat.Stat(img)
-        means.append(np.array(stat.mean))
-        stds.append(np.array(stat.var)**0.5)
+    for path in image_list:        
+        img_bgr = cv2.imread(path)
+        img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
+        R, G, B = img_rgb[..., 0], img_rgb[..., 1], img_rgb[..., 2]
+
+        mean = [np.mean(R), np.mean(G), np.mean(B)]
+        std = [np.std(R), np.std(G), np.std(B)]
+        means.append(mean)
+        stds.append(std)
     
     total_mean = np.mean(means, axis=0)
     total_std = np.mean(stds, axis=0)
@@ -41,8 +45,9 @@ def channel_histogram(image_list):
     green = []
     blue = []
     for path in image_list:
-        img = np.array(Image.open(path).convert('RGB'))
-        R, G, B = img[..., 0], img[..., 1], img[..., 2]
+        img_bgr = cv2.imread(path)
+        img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
+        R, G, B = img_rgb[..., 0], img_rgb[..., 1], img_rgb[..., 2]
         red.extend(R.flatten().tolist())
         green.extend(G.flatten().tolist())
         blue.extend(B.flatten().tolist())
