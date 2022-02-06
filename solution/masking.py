@@ -17,6 +17,8 @@ def create_mask(path, color_threshold):
     R, G, B = img[..., 0], img[..., 1], img[..., 2]
     rt, gt, bt = color_threshold
     mask = (R > rt) & (G > gt) & (B > bt) 
+    print('img ', img[0])
+    print('mask ', mask[0])
     return img, mask
 
 
